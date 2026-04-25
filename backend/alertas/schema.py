@@ -37,3 +37,48 @@ class Query(graphene.ObjectType):
 
     def resolve_gastos_por_anio(self, info, anio):
         return Gasto.objects.filter(fecha__year=anio)
+    
+class CrearGasto(graphene.Mutation):
+    class Arguments:
+        finca_id = graphene.ID(required=True)
+        animal_id = graphene.ID()
+        fecha = graphene.Date(required=True)
+        tipo_gasto = graphene.String(required=True)
+        descripcion = graphene.String(required=True)
+        cantidad = graphene.Decimal()
+        precio_unitario = graphene.Decimal()
+
+    gasto = graphene.Field(GastoType)
+
+    def mutate(
+        self,
+        info,
+        finca_id,
+        fecha,
+        tipo_gasto,
+        descripcion,
+        animal_id=None,
+        cantidad=1,
+        precio_unitario=0
+    ):
+        from fincas.models import Finca
+        from animales.models import Animal
+
+        finca = Finca.objects.get(id=finca_id)
+        animal = Animal.objects.filter(id=animal_id).first() if animal_id else None
+
+        gasto = Gasto.objects.create(
+            finca=finca,
+            animal=animal,
+            fecha=fecha,
+            tipo_gasto=tipo_gasto,
+            descripcion=descripcion,
+            cantidad=cantidad,
+            precio_unitario=precio_unitario
+        )
+
+        return CrearGasto(gasto=gasto)
+
+
+class Mutation(graphene.ObjectType):
+    crear_gasto = CrearGasto.Field()

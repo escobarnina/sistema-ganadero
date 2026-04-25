@@ -107,3 +107,111 @@ class Query(graphene.ObjectType):
         return Vacunacion.objects.filter(
             proxima_fecha__lt=hoy,
         )
+        
+class CrearVacunacion(graphene.Mutation):
+    class Arguments:
+        finca_id = graphene.ID(required=True)
+        animal_id = graphene.ID(required=True)
+        medicamento_id = graphene.ID()
+        fecha = graphene.Date(required=True)
+        dosis = graphene.String()
+        via_aplicacion = graphene.String()
+        costo = graphene.Decimal()
+        campana = graphene.String()
+        lote = graphene.String()
+        observaciones = graphene.String()
+
+    vacunacion = graphene.Field(VacunacionType)
+
+    def mutate(
+        self,
+        info,
+        finca_id,
+        animal_id,
+        fecha,
+        medicamento_id=None,
+        dosis=None,
+        via_aplicacion=None,
+        costo=0,
+        campana=None,
+        lote=None,
+        observaciones=None
+    ):
+        from fincas.models import Finca
+        from animales.models import Animal
+        from catalogos.models import Medicamento
+
+        finca = Finca.objects.get(id=finca_id)
+        animal = Animal.objects.get(id=animal_id)
+        medicamento = Medicamento.objects.filter(id=medicamento_id).first() if medicamento_id else None
+
+        vacunacion = Vacunacion.objects.create(
+            finca=finca,
+            animal=animal,
+            medicamento=medicamento,
+            fecha=fecha,
+            dosis=dosis,
+            via_aplicacion=via_aplicacion,
+            costo=costo,
+            campana=campana,
+            lote=lote,
+            observaciones=observaciones
+        )
+
+        return CrearVacunacion(vacunacion=vacunacion)
+
+
+class CrearTratamiento(graphene.Mutation):
+    class Arguments:
+        finca_id = graphene.ID(required=True)
+        animal_id = graphene.ID(required=True)
+        medicamento_id = graphene.ID()
+        fecha = graphene.Date(required=True)
+        diagnostico = graphene.String()
+        tipo = graphene.String()
+        dosis = graphene.String()
+        costo_total = graphene.Decimal()
+
+    tratamiento = graphene.Field(TratamientoType)
+
+    def mutate(
+        self,
+        info,
+        finca_id,
+        animal_id,
+        fecha,
+        medicamento_id=None,
+        diagnostico=None,
+        tipo=None,
+        dosis=None,
+        costo_total=0
+    ):
+        from fincas.models import Finca
+        from animales.models import Animal
+        from catalogos.models import Medicamento
+
+        finca = Finca.objects.get(id=finca_id)
+        animal = Animal.objects.get(id=animal_id)
+        medicamento = Medicamento.objects.filter(id=medicamento_id).first() if medicamento_id else None
+
+        tratamiento = Tratamiento.objects.create(
+            finca=finca,
+            animal=animal,
+            medicamento=medicamento,
+            fecha=fecha,
+            fecha_inicio=fecha,
+            diagnostico=diagnostico,
+            tipo=tipo,
+            dosis=dosis,
+            costo_total=costo_total
+        )
+
+        return CrearTratamiento(tratamiento=tratamiento)
+
+
+class Mutation(graphene.ObjectType):
+    crear_vacunacion = CrearVacunacion.Field()
+    crear_tratamiento = CrearTratamiento.Field()
+    
+class Mutation(graphene.ObjectType):
+    pass

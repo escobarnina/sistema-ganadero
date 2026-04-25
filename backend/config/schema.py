@@ -28,4 +28,19 @@ class Query(
     pass
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(
+    fincas.schema.Mutation,
+    catalogos.schema.Mutation,
+    animales.schema.Mutation,
+    reproduccion.schema.Mutation,
+    sanidad.schema.Mutation,
+    produccion.schema.Mutation,
+    comercio.schema.Mutation,
+    compras.schema.Mutation,
+    alertas.schema.Mutation,
+    graphene.ObjectType
+):
+    pass
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

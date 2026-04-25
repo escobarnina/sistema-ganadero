@@ -7,6 +7,8 @@ from .models import (
     Veterinario,
     Alimento,
     Reproductor,
+    
+    
 )
 
 admin.site.register(Raza)

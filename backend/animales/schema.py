@@ -60,3 +60,76 @@ class Query(graphene.ObjectType):
 
     def resolve_historial_parcelas(self, info):
         return AnimalParcela.objects.all()
+    
+class CrearAnimal(graphene.Mutation):
+    class Arguments:
+        finca_id = graphene.ID(required=True)
+        raza_id = graphene.ID()
+        categoria_id = graphene.ID()
+        padre_id = graphene.ID()
+        madre_id = graphene.ID()
+
+        nro_arete = graphene.String(required=True)
+        nombre = graphene.String()
+        sexo = graphene.String(required=True)
+        fecha_nacimiento = graphene.Date()
+        peso_nacimiento = graphene.Decimal()
+        peso = graphene.Decimal()
+        tipo_produccion = graphene.String()
+        origen = graphene.String()
+        color = graphene.String()
+        observaciones = graphene.String()
+
+    animal = graphene.Field(AnimalType)
+
+    def mutate(
+        self,
+        info,
+        finca_id,
+        nro_arete,
+        sexo,
+        raza_id=None,
+        categoria_id=None,
+        padre_id=None,
+        madre_id=None,
+        nombre=None,
+        fecha_nacimiento=None,
+        peso_nacimiento=0,
+        peso=0,
+        tipo_produccion="DOBLE_PROPOSITO",
+        origen="NACIDO_FINCA",
+        color=None,
+        observaciones=None
+    ):
+        from fincas.models import Finca
+        from catalogos.models import Raza, CategoriaAnimal
+
+        finca = Finca.objects.get(id=finca_id)
+        raza = Raza.objects.filter(id=raza_id).first() if raza_id else None
+        categoria = CategoriaAnimal.objects.filter(id=categoria_id).first() if categoria_id else None
+        padre = Animal.objects.filter(id=padre_id).first() if padre_id else None
+        madre = Animal.objects.filter(id=madre_id).first() if madre_id else None
+
+        animal = Animal.objects.create(
+            finca=finca,
+            raza=raza,
+            categoria=categoria,
+            padre=padre,
+            madre=madre,
+            nro_arete=nro_arete,
+            nombre=nombre,
+            sexo=sexo,
+            fecha_nacimiento=fecha_nacimiento,
+            peso_nacimiento=peso_nacimiento,
+            peso=peso,
+            tipo_produccion=tipo_produccion,
+            origen=origen,
+            color=color,
+            observaciones=observaciones
+        )
+
+        return CrearAnimal(animal=animal)
+
+
+class Mutation(graphene.ObjectType):
+    crear_animal = CrearAnimal.Field()

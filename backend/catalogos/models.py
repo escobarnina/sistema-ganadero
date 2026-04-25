@@ -39,6 +39,7 @@ class TipoMedicamento(models.Model):
     def __str__(self):
         return self.nombre
 
+ 
 
 class Medicamento(models.Model):
     finca = models.ForeignKey(
@@ -134,3 +135,4 @@ class Reproductor(models.Model):
 
     def __str__(self):
         return self.nombre or self.codigo
+
