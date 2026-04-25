@@ -102,3 +102,35 @@ class Alimento(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class Reproductor(models.Model):
+    TIPO_ORIGEN_CHOICES = [
+        ("INTERNO", "Interno"),
+        ("EXTERNO", "Externo"),
+        ("SEMEN", "Semen"),
+    ]
+
+    finca = models.ForeignKey(
+        Finca,
+        on_delete=models.CASCADE,
+        related_name="reproductores"
+    )
+    raza = models.ForeignKey(
+        Raza,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reproductores"
+    )
+
+    codigo = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=150, blank=True, null=True)
+    tipo_origen = models.CharField(max_length=30, choices=TIPO_ORIGEN_CHOICES)
+    codigo_pajuela = models.CharField(max_length=100, blank=True, null=True)
+    laboratorio = models.CharField(max_length=150, blank=True, null=True)
+    observaciones = models.TextField(blank=True, null=True)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nombre or self.codigo

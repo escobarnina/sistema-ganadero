@@ -6,6 +6,7 @@ from .models import (
     Medicamento,
     Veterinario,
     Alimento,
+    Reproductor,
 )
 
 admin.site.register(Raza)
@@ -14,5 +15,4 @@ admin.site.register(TipoMedicamento)
 admin.site.register(Medicamento)
 admin.site.register(Veterinario)
 admin.site.register(Alimento)
-
-# Register your models here.
+admin.site.register(Reproductor)
